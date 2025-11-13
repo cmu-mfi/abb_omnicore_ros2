@@ -86,7 +86,7 @@ def generate_launch_description():
         name="robot_state_publisher",
         output="both",
         parameters=[moveit_config.robot_description],
-        condition=UnlessCondition(sim_arg),
+        condition=IfCondition(sim_arg),
     )
 
     # ros2_control using FakeSystem as hardware
@@ -103,6 +103,7 @@ def generate_launch_description():
             ("/controller_manager/robot_description", "/robot_description"),
         ],
         output="both",
+        condition=IfCondition(sim_arg),
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -113,7 +114,7 @@ def generate_launch_description():
             "--controller-manager",
             "/controller_manager",
         ],
-        condition=UnlessCondition(sim_arg),
+        condition=IfCondition(sim_arg),
     )
 
     abb_controller_spawner = Node(
@@ -124,7 +125,6 @@ def generate_launch_description():
             "--controller-manager",
             "/controller_manager",
         ],
-        condition=UnlessCondition(sim_arg),
     )
 
     # Warehouse mongodb server

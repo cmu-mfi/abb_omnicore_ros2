@@ -83,17 +83,14 @@ def generate_launch_description():
                 robot_type,
                 TextSubstitution(text=".xacro"),
             ],
-            "launch_rviz": launch_rviz,
-            "use_fake_hardware": "false",
+                "use_fake_hardware": sim,
             "rws_ip": robot_ip,
             "rws_port": "443",
         }.items(),
-        condition=UnlessCondition(sim),
     )
     include_moveit = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(launch_moveit),
         launch_arguments={
-            "sim": sim,
             "robot_type": robot_type,
             "launch_rviz": launch_rviz,
         }.items(),

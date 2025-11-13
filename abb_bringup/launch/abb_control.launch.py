@@ -102,7 +102,7 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "launch_rviz", default_value="true", description="Launch RViz?"
+            "launch_rviz", default_value="false", description="Launch RViz?"
         )
     )
 
@@ -117,7 +117,6 @@ def generate_launch_description():
     rws_ip = LaunchConfiguration("rws_ip")
     rws_port = LaunchConfiguration("rws_port")
     configure_via_rws = LaunchConfiguration("configure_via_rws")
-    initial_joint_controller = LaunchConfiguration("initial_joint_controller")
 
     robot_description_content = Command(
         [
@@ -167,7 +166,6 @@ def generate_launch_description():
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
-        condition = UnlessCondition(use_fake_hardware)
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -178,21 +176,12 @@ def generate_launch_description():
             "--controller-manager",
             "/controller_manager",
         ],
-        condition=IfCondition(use_fake_hardware),
-    )
-
-    initial_joint_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=[initial_joint_controller, "-c", "/controller_manager"],
-        condition=IfCondition(use_fake_hardware),
     )
 
     nodes_to_start = [
         control_node,
         robot_state_publisher_node,
         joint_state_broadcaster_spawner,
-        initial_joint_controller_spawner,
     ]
 
     return LaunchDescription(declared_arguments + nodes_to_start)
