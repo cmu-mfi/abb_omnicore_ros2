@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(abb_irb1300_7_1400_moveit_config)
+project(abb_irb1300_7_140_moveit_config)
 
 find_package(ament_cmake REQUIRED)
 

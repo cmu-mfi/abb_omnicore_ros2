@@ -12,14 +12,31 @@ from moveit_configs_utils import MoveItConfigsBuilder
 def generate_launch_description():
 
     # Command-line arguments
-    db_arg = DeclareLaunchArgument(
-        "db", default_value="False", description="Database flag"
+    declared_arguments = []
+
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "db", default_value="False", description="Database flag"
+        )
     )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "sim", default_value="False", description="Simulation flag"
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "launch_rviz", default_value="True", description="Launch RViz"
+        )
+    )
+    sim_arg = LaunchConfiguration("sim")
+    db_arg = LaunchConfiguration("db")
+    launch_rviz_arg = LaunchConfiguration("launch_rviz")
 
     moveit_config = (
-        MoveItConfigsBuilder("abb_irb1300_7_1400")
-        .robot_description(file_path="config/abb_irb1300_7_1400.urdf.xacro")
-        .robot_description_semantic(file_path="config/abb_irb1300_7_1400.srdf")
+        MoveItConfigsBuilder("abb_irb1300_7_140")
+        .robot_description(file_path="config/abb_irb1300_7_140.urdf.xacro")
+        .robot_description_semantic(file_path="config/abb_irb1300_7_140.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .to_moveit_configs()
     )
@@ -34,7 +51,7 @@ def generate_launch_description():
 
     # RViz
     rviz_base = os.path.join(
-        get_package_share_directory("abb_irb1300_7_1400_moveit_config"), "launch"
+        get_package_share_directory("abb_irb1300_7_140_moveit_config"), "launch"
     )
     rviz_full_config = os.path.join(rviz_base, "moveit.rviz")
 
@@ -50,6 +67,7 @@ def generate_launch_description():
             moveit_config.planning_pipelines,
             moveit_config.robot_description_kinematics,
         ],
+        condition=IfCondition(launch_rviz_arg),
     )
 
     # Static TF
@@ -68,11 +86,12 @@ def generate_launch_description():
         name="robot_state_publisher",
         output="both",
         parameters=[moveit_config.robot_description],
+        condition=UnlessCondition(sim_arg),
     )
 
     # ros2_control using FakeSystem as hardware
     ros2_controllers_path = os.path.join(
-        get_package_share_directory("abb_irb1300_7_1400_moveit_config"),
+        get_package_share_directory("abb_irb1300_7_140_moveit_config"),
         "config",
         "ros2_controllers.yaml",
     )
@@ -94,20 +113,21 @@ def generate_launch_description():
             "--controller-manager",
             "/controller_manager",
         ],
+        condition=UnlessCondition(sim_arg),
     )
 
-    abb_irb1300_7_1400_controller_spawner = Node(
+    abb_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[
-            "abb_irb1300_7_1400_controller",
+            "abb_controller",
             "--controller-manager",
             "/controller_manager",
         ],
+        condition=UnlessCondition(sim_arg),
     )
 
     # Warehouse mongodb server
-    db_config = LaunchConfiguration("db")
     mongodb_server_node = Node(
         package="warehouse_ros_mongo",
         executable="mongo_wrapper_ros.py",
@@ -117,19 +137,19 @@ def generate_launch_description():
             {"warehouse_plugin": "warehouse_ros_mongo::MongoDatabaseConnection"},
         ],
         output="screen",
-        condition=IfCondition(db_config),
+        condition=IfCondition(db_arg),
     )
 
     return LaunchDescription(
         [
-            db_arg,
+            *declared_arguments,
             rviz_node,
             static_tf,
-            # robot_state_publisher, # fake
+            robot_state_publisher,
             run_move_group_node,
             ros2_control_node,
             mongodb_server_node,
-            # joint_state_broadcaster_spawner, # fake
-            # abb_irb1300_7_1400_controller_spawner, # fake
+            joint_state_broadcaster_spawner,
+            abb_controller_spawner,
         ]
     )

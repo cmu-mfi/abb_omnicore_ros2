@@ -1,6 +1,6 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import (
     Command,
     FindExecutable,
@@ -36,13 +36,6 @@ def generate_launch_description():
             default_value="",
             description="Description package with robot URDF/XACRO files. Usually the argument \
         is not set, it enables use of a custom description.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "moveit_config_package",
-            default_value="",
-            description="MoveIt configuration package for the robot, e.g. abb_irb1200_5_90_moveit_config",
         )
     )
     declared_arguments.append(
@@ -103,7 +96,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "initial_joint_controller",
-            default_value="joint_trajectory_controller",
+            default_value="abb_controller",
             description="Robot controller to start.",
         )
     )
@@ -117,7 +110,6 @@ def generate_launch_description():
     runtime_config_package = LaunchConfiguration("runtime_config_package")
     controllers_file = LaunchConfiguration("controllers_file")
     description_package = LaunchConfiguration("description_package")
-    moveit_config_package = LaunchConfiguration("moveit_config_package")
     description_file = LaunchConfiguration("description_file")
     prefix = LaunchConfiguration("prefix")
     use_fake_hardware = LaunchConfiguration("use_fake_hardware")
@@ -126,7 +118,6 @@ def generate_launch_description():
     rws_port = LaunchConfiguration("rws_port")
     configure_via_rws = LaunchConfiguration("configure_via_rws")
     initial_joint_controller = LaunchConfiguration("initial_joint_controller")
-    launch_rviz = LaunchConfiguration("launch_rviz")
 
     robot_description_content = Command(
         [
@@ -164,10 +155,6 @@ def generate_launch_description():
         [FindPackageShare(runtime_config_package), "config", controllers_file]
     )
 
-    rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare(moveit_config_package), "rviz", "moveit.rviz"]
-    )
-
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
@@ -180,15 +167,7 @@ def generate_launch_description():
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
-    )
-
-    rviz_node = Node(
-        package="rviz2",
-        condition=IfCondition(launch_rviz),
-        executable="rviz2",
-        name="rviz2",
-        output="log",
-        arguments=["-d", rviz_config_file],
+        condition = UnlessCondition(use_fake_hardware)
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -199,18 +178,19 @@ def generate_launch_description():
             "--controller-manager",
             "/controller_manager",
         ],
+        condition=IfCondition(use_fake_hardware),
     )
 
     initial_joint_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[initial_joint_controller, "-c", "/controller_manager"],
+        condition=IfCondition(use_fake_hardware),
     )
 
     nodes_to_start = [
         control_node,
         robot_state_publisher_node,
-        rviz_node,
         joint_state_broadcaster_spawner,
         initial_joint_controller_spawner,
     ]

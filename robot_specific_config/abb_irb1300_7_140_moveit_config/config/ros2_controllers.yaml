@@ -3,14 +3,14 @@ controller_manager:
   ros__parameters:
     update_rate: 100  # Hz
 
-    abb_irb1300_7_1400_controller:
+    abb_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-abb_irb1300_7_1400_controller:
+abb_controller:
   ros__parameters:
     joints:
       - joint_1
