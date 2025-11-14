@@ -1,10 +1,9 @@
-**TODO: Update readme with installation and setup tutorials.**
+# ABB OMNICORE ROS 2
 
-This is a meta-package containing everything to run an ABB robot or simulation with ROS 2.
+This is a meta-package containing everything to run an ABB robot with OMNICORE controller with ROS 2.
 
 - `abb_bringup`: Launch files and ros2_control config files that are generic to many types of ABB robots.
 - `abb_hardware_interface`: A ros2_control hardware interface using abb_libegm.
-- `abb_rws_client`: A package containg nodes for RWS only communication.
 - `robot_specific_config`: Packages containing robot description and config files that are unique to each type of ABB robot.
 - `abb_resources`: A small package containing ABB-related xacro resources.
 - `docs`: More detailed documentation.
@@ -13,19 +12,48 @@ This is a meta-package containing everything to run an ABB robot or simulation w
 
 ## Getting Started:
 
-There are three ways to use this package:
+### Installation
 
-- With an actual, physical ABB robot
+```
+sudo apt update
+sudo apt dist-upgrade
+rosdep update
+mkdir -p ros2_ws/src && cd ros2_ws/src
+git clone https://github.com/cmu-mfi/abb_omnicore_ros2.git -b omnicore
+vcs import < abb_omnicore_ros2/abb.repos
+rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
+```
 
-- With ROS 2 simulating the robot controllers
+Build the package:
 
-- With an ABB RobotStudio simulation. Requires 2 PC's (one Windows, one Linux)
+```
+cd ros2_ws
+colcon build
+```
 
-Detailed setup instructions can be found [here](docs/README.md).
+Verify using RViz to view and control simulation robot:
 
-## Limitations:
+```
+ros2 launch abb_bringup abb_bringup.launch.py sim:=true robot_type:=irb1300_7_140 robot_class:=irb1300
+```
 
-The IRB1200-5-0.9 is the only robot that has robot description and config files as of March 2022. Pull requests to add additional robot types are welcome.
+### Run with Real Robot
+
+* The controller must have RWS 2.0 and EGM option installed and enabled.
+![RWS and EGM Interfaces](./docs/images/abb_ros2.png)
+* Follow the guides below to setup your controller:
+    - [Robot Studio Setup Guide](./RobotStudioSetup.md)
+    - [Network Configuration](./NetworkingConfiguration.md)
+    - [Troubleshooting](./Troubleshooting.md)
+
+* Test with following:
+```
+ros2 launch abb_bringup abb_bringup.launch.py sim:=false robot_type:=irb1300_7_140 robot_class:=irb1300 robot_ip:=<controller_ip_address>
+```
+
+> ![Note]
+> The repository currently does not support MultiMove.
+
 
 ## Contributing
 
