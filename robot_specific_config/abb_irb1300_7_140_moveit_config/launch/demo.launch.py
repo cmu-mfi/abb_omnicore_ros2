@@ -7,17 +7,23 @@ from launch.substitutions import PathJoinSubstitution
 
 def generate_launch_description():
 
-    return LaunchDescription([
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([
-                PathJoinSubstitution([
-                    get_package_share_directory("abb_irb1300_7_140_moveit_config"),
-                    "launch",
-                    "moveit.launch.py"
-                ]),
-            ]),
-            launch_arguments={
-                "sim": "True"
-            }.items()
-        )
-    ])
+    return LaunchDescription(
+        [
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(
+                    [
+                        PathJoinSubstitution(
+                            [
+                                get_package_share_directory(
+                                    "abb_irb1300_7_140_moveit_config"
+                                ),
+                                "launch",
+                                "moveit.launch.py",
+                            ]
+                        ),
+                    ]
+                ),
+                launch_arguments={"sim": "True"}.items(),
+            )
+        ]
+    )

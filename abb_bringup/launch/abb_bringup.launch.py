@@ -17,27 +17,35 @@ from launch.substitutions import (
 
 
 def generate_launch_description():
-    
+
     # 1. read command line arguments
     declared_arguments = []
     declared_arguments.append(
         DeclareLaunchArgument(
-            "sim", default_value="False", description="Simulation flag",
+            "sim",
+            default_value="False",
+            description="Simulation flag",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "robot_ip", default_value="", description="Robot IP address",
+            "robot_ip",
+            default_value="",
+            description="Robot IP address",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "launch_rviz", default_value="True", description="Launch RViz",
+            "launch_rviz",
+            default_value="True",
+            description="Launch RViz",
         )
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "robot_type", default_value="irb1300_7_140", description="Robot name, like irb1300_7_140 for IRB1300-7/1.40",
+            "robot_type",
+            default_value="irb1300_7_140",
+            description="Robot name, like irb1300_7_140 for IRB1300-7/1.40",
         )
     )
     declared_arguments.append(
@@ -49,7 +57,9 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
-            "namespace", default_value="", description="Robot namespace",
+            "namespace",
+            default_value="",
+            description="Robot namespace",
         )
     )
 
@@ -58,7 +68,7 @@ def generate_launch_description():
     launch_rviz = LaunchConfiguration("launch_rviz")
     robot_type = LaunchConfiguration("robot_type")
     robot_class = LaunchConfiguration("robot_class")
-    
+
     launch_controller = os.path.join(
         get_package_share_directory("abb_bringup"),
         "launch",
@@ -69,7 +79,7 @@ def generate_launch_description():
         "launch",
         "abb_moveit.launch.py",
     )
-    
+
     include_controller = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(launch_controller),
         launch_arguments={
@@ -83,7 +93,7 @@ def generate_launch_description():
                 robot_type,
                 TextSubstitution(text=".xacro"),
             ],
-                "use_fake_hardware": sim,
+            "use_fake_hardware": sim,
             "rws_ip": robot_ip,
             "rws_port": "443",
         }.items(),
@@ -95,10 +105,5 @@ def generate_launch_description():
             "launch_rviz": launch_rviz,
         }.items(),
     )
-    
 
-    return LaunchDescription([
-        *declared_arguments,
-        include_controller,
-        include_moveit
-    ])
+    return LaunchDescription([*declared_arguments, include_controller, include_moveit])

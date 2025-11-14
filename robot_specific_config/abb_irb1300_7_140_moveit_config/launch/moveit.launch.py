@@ -15,9 +15,7 @@ def generate_launch_description():
     declared_arguments = []
 
     declared_arguments.append(
-        DeclareLaunchArgument(
-            "db", default_value="False", description="Database flag"
-        )
+        DeclareLaunchArgument("db", default_value="False", description="Database flag")
     )
     declared_arguments.append(
         DeclareLaunchArgument(
