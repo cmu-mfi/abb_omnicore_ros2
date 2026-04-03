@@ -38,7 +38,10 @@ The following steps will cover how to set up the controller for EGM with a robot
 
 ## RAPID Configuration
 
-4. Add the code from `TRob1Main.mod` to the RAPID module. This can be done by selecting the module on the sidebar, and copy-pasting the code into the editor, or by right-clicking the `T_ROB1` task, selecting `Load Module...`, and navigate to and selecting `TRob1Main.mod` in the file browser. Optionally, if velocity control will be used, load `velocity_control_example/TRob1Main.mod`.
+4. Add the code from `TRob1Main.mod` [credits: [jweber](https://gitlab.cvh-server.de/jweber/abb_egm_driver/-/blob/master/abb_egm_driver/rapid/EGM_joint_trajectory.mod?ref_type=heads)] to the RAPID module. This can be done by selecting the module on the sidebar, and copy-pasting the code into the editor, or by right-clicking the `T_ROB1` task, selecting `Load Module...`, and navigate to and selecting `TRob1Main.mod` in the file browser. Optionally, if velocity control will be used, load `velocity_control_example/TRob1Main.mod`.
+
+> [!Note]
+> TRob1Main.mod has been tested with IRB1300-7/1.4 robot and Omnicore C90XT controller.
 
 ![add module](images/egm4.png)
 
