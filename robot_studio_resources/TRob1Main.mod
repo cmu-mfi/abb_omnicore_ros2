@@ -1,3 +1,5 @@
+! Source: https://gitlab.cvh-server.de/jweber/abb_egm_driver/-/blob/master/abb_egm_driver/rapid/EGM_joint_trajectory.mod?ref_type=heads
+
 MODULE TRob1Main
     PROC main()
         !TPWrite "Start EGM interface";
