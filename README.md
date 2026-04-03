@@ -42,16 +42,16 @@ ros2 launch abb_bringup abb_bringup.launch.py sim:=true robot_type:=irb1300_7_14
 * The controller must have RWS 2.0 and EGM option installed and enabled.
 ![RWS and EGM Interfaces](./docs/images/abb_ros2.png)
 * Follow the guides below to setup your controller:
-    - [Robot Studio Setup Guide](./RobotStudioSetup.md)
-    - [Network Configuration](./NetworkingConfiguration.md)
-    - [Troubleshooting](./Troubleshooting.md)
+    - [Robot Studio Setup Guide](./docs/RobotStudioSetup.md)
+    - [Network Configuration](./docs/NetworkingConfiguration.md)
+    - [Troubleshooting](./docs/Troubleshooting.md)
 
 * Test with following:
 ```
 ros2 launch abb_bringup abb_bringup.launch.py sim:=false robot_type:=irb1300_7_140 robot_class:=irb1300 robot_ip:=<controller_ip_address>
 ```
 
-> ![Note]
+> [!Note]
 > The repository currently does not support MultiMove.
 
 
